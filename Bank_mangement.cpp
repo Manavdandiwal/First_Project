@@ -199,10 +199,9 @@ void operation_deposit(vector<bank_data>& users_info, vector<last_three_trans>& 
 
 void insering_detail()
 {
+	ofstream user("Bank_Data.txt");
 	for (auto i : users_info)
 	{
-		ofstream user("Bank_Data.txt");
-
 		for(int j=0;j<i.name.length();j++)
 		{
 			user<<i.name[j];
