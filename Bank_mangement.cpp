@@ -3,7 +3,6 @@
 #include<vector>
 #include<fstream>
 #include<ctime>
-#include <unistd.h>
 #include<string>
 using namespace std;
 
@@ -23,13 +22,13 @@ struct last_three_trans
 	pair<string, int> transaction_3;
 };
 
-std::string gen_random(const int len) {
+string gen_random(const int len) {
 
-	std::string tmp_s;
+	string tmp_s;
 	static const char alphanum[] =
 		"0123456789";
 
-	srand((unsigned)time(NULL) * getpid());
+	srand(time(NULL));
 
 	tmp_s.reserve(len);
 
@@ -43,13 +42,12 @@ std::string gen_random(const int len) {
 vector<bank_data> users_info;
 vector<last_three_trans> trans_detail;
 
-void input_new_user(vector<bank_data>& users_info)
+void input_new_user()
 {
 	bank_data new_user;
-	string first_name,Last_name;
-	cout << "Enter your Name : ";
-	cin >> first_name >> Last_name;
-	new_user.name += first_name + " " + Last_name;
+	cout<< "Enter your Name : ";
+	fflush(stdin);
+	getline(cin,new_user.name);
 	cout << "Enter amount to be deposited : ";
 	cin >> new_user.balance;
 	cout << "Enter your Phone Number : ";
@@ -69,7 +67,7 @@ void input_new_user(vector<bank_data>& users_info)
 	users_info.push_back(new_user);
 }
 
-void check_transactions(vector<bank_data>& users_info)
+void check_transactions()
 {
 	string user;
 	cout << "Please enter your account number : ";
@@ -91,24 +89,18 @@ void check_transactions(vector<bank_data>& users_info)
 	cout << "No Transactions have been made yet" << endl;
 }
 
-void balance_inquiry(vector<bank_data>& users_info)
+void balance_inquiry()
 {
-	string name, acc_num;
-	long long ph;
-	string first_name, last_name;
-	cout << "Enter your Name : ";
-	cin >> first_name >> last_name;
-	name = first_name + " " + last_name;
+	string acc_num;
 	fflush(stdin);
 	cout << "Enter your Account number : ";
 	cin >> acc_num;
-	cout << "Enter Phone Number : ";
-	cin >> ph;
-
+	
 	for (auto i : users_info)
 	{
-		if ((i.name == name) && (i.phone_number == ph) && (i.account_number == acc_num))
+		if (i.account_number == acc_num)
 		{
+			cout << "Welcome Mr. "<<i.name<<endl;
 			cout << "Your current balance is " << i.balance << endl;
 			return;
 		}
@@ -116,7 +108,7 @@ void balance_inquiry(vector<bank_data>& users_info)
 	cout << "User not found. Please confirm your details." << endl;
 }
 
-void operation_withdraw(vector<bank_data>& users_info,vector<last_three_trans>& trans_detail)
+void operation_withdraw()
 {
 	string acc_no;
 	int amount;
@@ -160,7 +152,7 @@ void operation_withdraw(vector<bank_data>& users_info,vector<last_three_trans>& 
 	trans_detail.push_back(new_);
 }
 
-void operation_deposit(vector<bank_data>& users_info, vector<last_three_trans>& trans_detail)
+void operation_deposit()
 {
 	string acc_no;
 	int amount;
@@ -218,18 +210,16 @@ void insering_detail()
 	}
 }
 
-int main()
+void get_info()
 {
 	bank_data tmp;
 	last_three_trans temp;
-	fstream user_data,transactions;
+	ifstream user_data,transactions;
 	user_data.open("Bank_Data.txt");
 	transactions.open("Transaction_details.txt");	
 
-	string first_name,last_name;
-	while (user_data >> first_name >> last_name >> tmp.account_number >> tmp.balance >> tmp.phone_number)
+	while (getline(user_data,tmp.name) && user_data >> tmp.account_number >> tmp.balance >> tmp.phone_number)
 	{
-		tmp.name = first_name + " " + last_name;
 		users_info.push_back(tmp);
 	}
 
@@ -238,6 +228,13 @@ int main()
 		trans_detail.push_back(temp);
 	}
 
+	user_data.close();
+	transactions.close();
+}
+int main()
+{
+	get_info();
+	system("cls");
 	cout << "-------------------------------------------------" << endl;
 	cout << "         Hello Sir! Welcome to the Bank." << endl;
 	cout << "-------------------------------------------------" << endl;
@@ -265,23 +262,23 @@ int main()
 			exit(0);
 
 		case 1:
-			input_new_user(users_info);
+			input_new_user();
 			break;
 
 		case 2:
-			balance_inquiry(users_info);
+			balance_inquiry();
 			break;
 
 		case 3:
-			check_transactions(users_info);
+			check_transactions();
 			break;
 
 		case 4:
-			operation_withdraw(users_info,trans_detail);
+			operation_withdraw();
 			break;
 
 		case 5:
-			operation_deposit(users_info, trans_detail);
+			operation_deposit();
 			break;
 
 		default:
